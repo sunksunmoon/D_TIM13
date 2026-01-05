@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistem Minimarket - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <h1 class="main-title">𝐒𝐈𝐒𝐓𝐄𝐌 𝐌𝐈𝐍𝐈𝐌𝐀𝐑𝐊𝐄𝐓</h1>
+        <div class="glass-card">
+            <div class="welcome-text">W E L C O M E</div>
+            
+            <div id="role-section">
+                <button class="btn-role" onclick="showPassword('Admin')">1. Admin</button>
+                <button class="btn-role" onclick="showPassword('Kasir')">2. Kasir</button>
+                <button class="btn-role" onclick="showPassword('Gudang')">3. Gudang</button>
+            </div>
+
+            <div id="password-section" style="display:none;">
+                <p id="selected-info" class="status-text"></p>
+                <input type="password" id="passInput" class="custom-input" placeholder="Masukkan Password">
+                <br>
+                <button class="btn-masuk" onclick="loginCheck()">Masuk 🌸</button>
+                <p class="back-link" onclick="location.reload()">← Kembali pilih role</p>
+            </div>
+        </div>
+        <div class="butterfly">🦋</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let roleTerpilih = "";
+        function showPassword(role) {
+            roleTerpilih = role;
+            document.getElementById('role-section').style.display = 'none';
+            document.getElementById('password-section').style.display = 'block';
+            document.getElementById('selected-info').innerText = "Akses: " + role;
+        }
+
+        function loginCheck() {
+            const pass = document.getElementById('passInput').value;
+            const passwords = { "Admin": "1111", "Kasir": "2222", "Gudang": "3333" };
+
+            if (pass === passwords[roleTerpilih]) {
+                window.location.href = roleTerpilih.toLowerCase() + ".html";
+            } else {
+                Swal.fire({ icon: 'error', title: 'Password Salah!', background: '#fff0f3', confirmButtonColor: '#ff4d94' });
+            }
+        }
+    </script>
+</body>
+</html>

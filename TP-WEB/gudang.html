@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Gudang Minimarket Jaya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #fff0f3; padding: 20px; }
+        .box { background: white; padding: 25px; border-radius: 25px; border: 2px solid #ffb6c1; max-width: 900px; margin: auto; }
+        .form-add { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        input, select { padding: 10px; border-radius: 10px; border: 1px solid #ffb6c1; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #ff4d94; color: white; padding: 12px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .btn-ok { background: #ff4d94; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-plus { background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .btn-del { background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1 style="color:#ff4d94; text-align:center;">📦 MANAJEMEN GUDANG</h1>
+        <div class="form-add">
+            <input type="text" id="n" placeholder="Nama Barang">
+            <input type="number" id="h" placeholder="Harga">
+            <input type="number" id="s" placeholder="Stok">
+            <select id="k">
+                <option value="MAKANAN">MAKANAN</option>
+                <option value="MINUMAN">MINUMAN</option>
+                <option value="ELEKTRONIK">ELEKTRONIK</option>
+                <option value="ALAT MANDI">ALAT MANDI</option>
+                <option value="FURNITURE">FURNITURE</option>
+            </select>
+        </div>
+        <button class="btn-ok" onclick="tambah()" style="margin-bottom:20px;">+ TAMBAH BARANG BARU</button>
+        <hr color="#fff0f3">
+        <table>
+            <thead><tr><th>Kategori</th><th>Nama Barang</th><th>Harga</th><th>Stok</th><th>Aksi</th></tr></thead>
+            <tbody id="list-gudang"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const databaseAwal = {
+            "ELEKTRONIK": [{n:"Setrika", h:150000, s:100},{n:"Kipas Angin", h:200000, s:100},{n:"Rice Cooker", h:250000, s:100},{n:"Blender", h:180000, s:100},{n:"Dispenser", h:300000, s:100},{n:"Televisi", h:1500000, s:100},{n:"Speaker", h:500000, s:100},{n:"Charger HP", h:50000, s:100},{n:"Lampu LED", h:35000, s:100},{n:"Stop Kontak", h:25000, s:100}],
+            "MAKANAN": [{n:"Indomie Rebus", h:3000, s:100},{n:"Indomie Goreng", h:3000, s:100},{n:"Mie Sedaap", h:3000, s:100},{n:"Beras Ramos", h:75000, s:100},{n:"Gula Pasir", h:15000, s:100},{n:"Minyak Goreng", h:18000, s:100},{n:"Tepung Terigu", h:12000, s:100},{n:"Biskuit Kaleng", h:10000, s:100},{n:"Sarden Kaleng", h:15000, s:100},{n:"Kornet Sapi", h:25000, s:100}],
+            "MINUMAN": [{n:"Aqua Botol", h:4000, s:100},{n:"Teh Botol Sosro", h:5000, s:100},{n:"Kopi Kapal Api", h:5000, s:100},{n:"Susu UHT 250 ml", h:10000, s:100},{n:"Jus Jeruk", h:12000, s:100},{n:"Coca Cola", h:8000, s:100},{n:"Mizone", h:7000, s:100},{n:"Yogurt Cimory", h:15000, s:100},{n:"Sirup ABC", h:20000, s:100},{n:"Teh Kotak", h:6000, s:100}],
+            "FURNITURE": [{n:"Kursi Plastik", h:50000, s:100},{n:"Meja Belajar", h:150000, s:100},{n:"Lemari Kayu", h:400000, s:100},{n:"Jemuran Besi", h:100000, s:100},{n:"Rak Sepatu", h:75000, s:100},{n:"Cermin Besar", h:60000, s:100},{n:"Bantal Tidur", h:35000, s:100},{n:"Kasur Lipat", h:500000, s:100},{n:"Karpet Lantai", h:120000, s:100},{n:"Gantungan Baju", h:15000, s:100}],
+            "ALAT MANDI": [{n:"Sabun Batang", h:5000, s:100},{n:"Shampoo Cair", h:15000, s:100},{n:"Pasta Gigi", h:10000, s:100},{n:"Sikat Gigi", h:8000, s:100},{n:"Handuk Mandi", h:50000, s:100},{n:"Gayung Mandi", h:12000, s:100},{n:"Ember Plastik", h:25000, s:100},{n:"Sikat Lantai", h:15000, s:100},{n:"Detergen Bubuk", h:20000, s:100},{n:"Pewangi Pakaian", h:10000, s:100}]
+        };
+
+        let db = JSON.parse(localStorage.getItem('db_gudang')) || databaseAwal;
+
+        function render() {
+            const list = document.getElementById('list-gudang');
+            list.innerHTML = "";
+            for(let k in db) {
+                db[k].forEach((it, i) => {
+                    list.innerHTML += `<tr><td>${k}</td><td>${it.n}</td><td>${it.h}</td><td><b>${it.s}</b></td>
+                    <td><button class="btn-plus" onclick="edit('${k}',${i},10)">+10</button> <button class="btn-del" onclick="hapus('${k}',${i})">X</button></td></tr>`;
+                });
+            }
+            localStorage.setItem('db_gudang', JSON.stringify(db));
+        }
+
+        function tambah() {
+            const n = document.getElementById('n').value, h = parseInt(document.getElementById('h').value), s = parseInt(document.getElementById('s').value), k = document.getElementById('k').value;
+            if(!n || !h) return alert("Isi data!");
+            db[k].push({n, h, s});
+            render();
+        }
+
+        function edit(k, i, v) { db[k][i].s += v; render(); }
+        function hapus(k, i) { if(confirm("Hapus?")) { db[k].splice(i,1); render(); } }
+        render();
+    </script>
+</body>
+</html>

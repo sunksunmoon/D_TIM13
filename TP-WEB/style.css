@@ -1,0 +1,49 @@
+body {
+    margin: 0; padding: 0;
+    background-color: #fff0f3;
+    font-family: 'Poppins', sans-serif;
+}
+* { font-style: italic; }
+
+.wrapper {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 100vh; padding: 20px;
+}
+
+.main-title {
+    font-family: 'Dancing Script', cursive; font-size: 3.5rem;
+    color: #ff4d94; text-align: center; margin-bottom: 20px;
+}
+
+.glass-card {
+    background: white; padding: 40px; border-radius: 50px;
+    border: 2px solid #ffb6c1; box-shadow: 0 15px 35px rgba(255,133,162,0.2);
+    text-align: center; width: 400px;
+}
+.full-width { width: 85%; max-width: 800px; }
+
+.btn-role, .btn-masuk, .btn-logout {
+    background: linear-gradient(45deg, #ff85a2, #ff4d94);
+    color: white; border: none; padding: 12px 25px;
+    border-radius: 15px; font-weight: bold; margin: 10px;
+    cursor: pointer; box-shadow: 0 5px 15px rgba(255,77,148,0.3);
+    transition: 0.3s;
+}
+
+.btn-role:hover { transform: scale(1.05); }
+
+.viz-area {
+    background: #fff9fa; border: 2px dashed #ffb6c1;
+    border-radius: 20px; padding: 20px; margin-top: 20px;
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+}
+
+.node-item {
+    background: white; border: 2px solid #ff4d94;
+    padding: 10px; border-radius: 10px; color: #ff4d94;
+}
+
+.custom-input { padding: 12px; border-radius: 15px; border: 1px solid #ffb6c1; width: 80%; margin-bottom: 15px; }
+.status-text { color: #ff4d94; font-weight: bold; font-size: 1.2rem; }
+.back-link { font-size: 0.8rem; color: gray; cursor: pointer; margin-top: 10px; }
+.butterfly { font-size: 50px; margin-top: 20px; }

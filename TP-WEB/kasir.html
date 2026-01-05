@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Kasir Final - Minimarket Jaya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { font-style: normal !important; box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: #fff0f3; font-family: 'Poppins', sans-serif; }
+        .wrapper { display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .main-title { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #ff4d94; margin-bottom: 10px; }
+        .kasir-container { display: flex; gap: 20px; width: 98%; max-width: 1300px; align-items: flex-start; }
+        .katalog-section { flex: 2; background: white; padding: 20px; border-radius: 30px; border: 2px solid #ffb6c1; }
+        .tab-menu { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #fff0f3; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; border-radius: 12px; border: 1px solid #ffb6c1; background: white; cursor: pointer; font-weight: bold; color: #ff4d94; transition: 0.3s; }
+        .tab-btn.active { background: #ff4d94; color: white; }
+        .grid-barang { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+        .item-barang { background: #fff9fa; border: 1px solid #ffb6c1; padding: 15px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; justify-content: space-between; min-height: 110px; position: relative; }
+        .item-barang:hover { background: #ffecf0; transform: translateY(-3px); border-color: #ff4d94; }
+        .item-barang b { display: block; margin-bottom: 5px; color: #333; font-size: 0.85rem; height: 35px; overflow: hidden; }
+        .item-barang span { color: #ff4d94; font-weight: bold; font-size: 0.85rem; background: #fff; padding: 2px 8px; border-radius: 10px; border: 1px solid #ffeef1; }
+        .badge-stok { position: absolute; top: 5px; right: 5px; font-size: 0.65rem; background: #ff4d94; color: white; padding: 2px 6px; border-radius: 8px; }
+        .btn-role { background: linear-gradient(45deg, #ff85a2, #ff4d94); color: white; border: none; padding: 12px; border-radius: 15px; font-weight: bold; margin-bottom: 8px; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-role:hover { opacity: 0.9; transform: scale(1.02); }
+        
+        /* Baris Keranjang & Laporan */
+        .cart-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid #fff0f3; }
+        .btn-min { background: #ff4d4d; border: none; color: white; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
+        .btn-del-row { background: #ff4d4d; color: white; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
+
+        .struk-font { font-family: 'Courier New', Courier, monospace; background: #fff; padding: 15px; border: 1px dashed #333; text-align: left; line-height: 1.4; }
+        .ktp-card { background: #222; color: #ffffff; padding: 20px; font-family: 'Courier New', Courier, monospace; text-align: left; white-space: pre; display: inline-block; line-height: 1.2; border: 2px solid #555; margin: 15px auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #ff4d94; color: white; padding: 10px; border: 1px solid #ddd; font-size: 0.85rem; }
+        td { padding: 8px; border: 1px solid #ddd; font-size: 0.8rem; vertical-align: middle; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <h1 class="main-title">𝐒𝐈𝐒𝐓𝐄𝐌 𝐊𝐀𝐒𝐈𝐑</h1>
+        
+        <div id="shift-selector" style="width: 500px; background: white; padding: 40px; border-radius: 30px; border: 2px solid #ffb6c1; text-align: center;">
+            <h2 style="color: #ff4d94; margin-bottom: 30px;">Pilih Shift Kerja</h2>
+            <button class="btn-role" onclick="mulaiShift('Pagi')">🌅 Shift Pagi</button>
+            <button class="btn-role" style="background:#00b4d8" onclick="mulaiShift('Siang')">☀️ Shift Siang</button>
+            <button class="btn-role" style="background:#7b2cbf" onclick="mulaiShift('Malam')">🌙 Shift Malam</button>
+        </div>
+
+        <div class="kasir-container" id="pos-main" style="display: none;">
+            <div class="katalog-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <span id="shift-aktif-label" style="background: #ff4d94; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold;"></span>
+                        <button class="btn-role" style="width: auto; background: #ffaa00; margin-left: 10px;" onclick="gantiShift()">🔄 Ganti</button>
+                    </div>
+                    <button class="btn-role" style="width: auto; background: #444;" onclick="bukaLaporan()">📋 Laporan</button>
+                </div>
+                <div class="tab-menu" id="tab-container"></div>
+                <div id="display-barang" class="grid-barang"></div>
+            </div>
+
+            <div class="keranjang-section" style="flex: 1;">
+                <div style="background: white; padding: 20px; border-radius: 30px; border: 2px solid #ffb6c1; position: sticky; top: 20px;">
+                    <h3 style="color: #ff4d94;">🛒 Keranjang</h3>
+                    <div id="list-keranjang" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
+                    <hr color="#fff0f3">
+                    <h2 id="display-total" style="color:#ff4d94">Total: Rp 0</h2>
+                    <div id="step-pilihan" style="display: none;">
+                        <button class="btn-role" onclick="prosesMember()">1. Member (Diskon 15%)</button>
+                        <button class="btn-role" style="background: #888;" onclick="bukaBayarNonMember()">2. Non-Member</button>
+                        <button class="btn-role" style="background: #00b4d8;" onclick="bukaCekDataKtp()">3. Cek Member</button>
+                        <button class="btn-role" style="background: #ffaa00;" onclick="daftarMemberBaru()">4. Daftar Member Baru</button>
+                    </div>
+                    <div id="area-bayar-non" style="display: none;">
+                        <input type="number" id="inputUangNon" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ffb6c1; margin-bottom:10px;" placeholder="Input Uang Tunai...">
+                        <button class="btn-role" style="background: #4CAF50;" onclick="finalisasiBayar('Non-Member', 0, 'inputUangNon')">Cetak Struk</button>
+                    </div>
+                    <button id="btn-proses-awal" class="btn-role" onclick="tampilkanOpsiBayar()">Bayar Sekarang ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-laporan" class="katalog-section" style="display:none; width: 950px;">
+            <h2 style="color: #ff4d94; text-align: center;">RIWAYAT TRANSAKSI</h2>
+            <div id="isi-laporan" style="margin-bottom: 20px;"></div>
+            <button class="btn-role" onclick="tutupLaporan()">Tutup Laporan</button>
+        </div>
+
+        <div id="modal-cek-ktp" class="katalog-section" style="display:none; width: 550px; text-align: center;">
+            <h2 style="color: #ff4d94;">Pencarian Member</h2>
+            <input type="text" id="inputCariNik" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ffb6c1;" placeholder="Masukkan NIK Member">
+            <button class="btn-role" style="margin-top:10px;" onclick="cariNikKtp()">Cari Data</button>
+            <div id="hasil-cari-ktp"></div>
+            <button class="btn-role" style="background:#888" onclick="tutupCekKtp()">Kembali</button>
+        </div>
+
+        <div id="area-struk" style="display:none; width: 400px; text-align: center;">
+            <div id="struk-final" class="struk-font"></div>
+            <br>
+            <button class="btn-role" onclick="location.reload()">Transaksi Baru</button>
+        </div>
+    </div>
+
+    <script>
+        const databaseLengkap = {
+            "ELEKTRONIK": [{n:"Setrika", h:150000, s:100},{n:"Kipas Angin", h:200000, s:100},{n:"Rice Cooker", h:250000, s:100},{n:"Blender", h:180000, s:100},{n:"Dispenser", h:300000, s:100},{n:"Televisi", h:1500000, s:100},{n:"Speaker", h:500000, s:100},{n:"Charger HP", h:50000, s:100},{n:"Lampu LED", h:35000, s:100},{n:"Stop Kontak", h:25000, s:100}],
+            "MAKANAN": [{n:"Indomie Rebus", h:3000, s:100},{n:"Indomie Goreng", h:3000, s:100},{n:"Mie Sedaap", h:3000, s:100},{n:"Beras Ramos", h:75000, s:100},{n:"Gula Pasir", h:15000, s:100},{n:"Minyak Goreng", h:18000, s:100},{n:"Tepung Terigu", h:12000, s:100},{n:"Biskuit Kaleng", h:10000, s:100},{n:"Sarden Kaleng", h:15000, s:100},{n:"Kornet Sapi", h:25000, s:100}],
+            "MINUMAN": [{n:"Aqua Botol", h:4000, s:100},{n:"Teh Botol Sosro", h:5000, s:100},{n:"Kopi Kapal Api", h:5000, s:100},{n:"Susu UHT 250 ml", h:10000, s:100},{n:"Jus Jeruk", h:12000, s:100},{n:"Coca Cola", h:8000, s:100},{n:"Mizone", h:7000, s:100},{n:"Yogurt Cimory", h:15000, s:100},{n:"Sirup ABC", h:20000, s:100},{n:"Teh Kotak", h:6000, s:100}],
+            "FURNITURE": [{n:"Kursi Plastik", h:50000, s:100},{n:"Meja Belajar", h:150000, s:100},{n:"Lemari Kayu", h:400000, s:100},{n:"Jemuran Besi", h:100000, s:100},{n:"Rak Sepatu", h:75000, s:100},{n:"Cermin Besar", h:60000, s:100},{n:"Bantal Tidur", h:35000, s:100},{n:"Kasur Lipat", h:500000, s:100},{n:"Karpet Lantai", h:120000, s:100},{n:"Gantungan Baju", h:15000, s:100}],
+            "ALAT MANDI": [{n:"Sabun Batang", h:5000, s:100},{n:"Shampoo Cair", h:15000, s:100},{n:"Pasta Gigi", h:10000, s:100},{n:"Sikat Gigi", h:8000, s:100},{n:"Handuk Mandi", h:50000, s:100},{n:"Gayung Mandi", h:12000, s:100},{n:"Ember Plastik", h:25000, s:100},{n:"Sikat Lantai", h:15000, s:100},{n:"Detergen Bubuk", h:20000, s:100},{n:"Pewangi Pakaian", h:10000, s:100}]
+        };
+
+        let dataMember = JSON.parse(localStorage.getItem('db_member')) || { 
+            "2400018187": { nama: "Linda Amelia Sari", alamat: "Maluku Utara", tgl: "02-05-2007" },
+            "2400018185": { nama: "Resty Amandha", alamat: "Cilacap", tgl: "31-01-2005" },
+            "2400018169": { nama: "Alifiya Hartisya", alamat: "bangka Belitung", tgl: "06-09-2005" },
+            "2400018170": { nama: "Devina Agnesia Pratami", alamat: "Mojokerto", tgl: "09-09-2005" }
+        };
+
+        let dbStok = JSON.parse(localStorage.getItem('db_gudang')) || databaseLengkap;
+        let logTransaksiShift = JSON.parse(localStorage.getItem('logKasir')) || [];
+        let shiftAktif = sessionStorage.getItem('shiftAktif') || "";
+        let keranjang = {};
+        let totalBelanja = 0;
+
+        window.onload = function() {
+            if(shiftAktif) {
+                document.getElementById('shift-selector').style.display = 'none';
+                document.getElementById('pos-main').style.display = 'flex';
+                document.getElementById('shift-aktif-label').innerText = "Shift: " + shiftAktif;
+                initKatalog();
+            }
+        };
+
+        function mulaiShift(s) { sessionStorage.setItem('shiftAktif', s); location.reload(); }
+        function gantiShift() { sessionStorage.removeItem('shiftAktif'); location.reload(); }
+
+        function initKatalog() {
+            const tabs = document.getElementById('tab-container');
+            tabs.innerHTML = "";
+            Object.keys(dbStok).forEach((kat, i) => {
+                let b = document.createElement('button');
+                b.className = `tab-btn ${i===0?'active':''}`;
+                b.innerText = kat;
+                b.onclick = () => {
+                    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+                    b.classList.add('active');
+                    renderBarang(kat);
+                };
+                tabs.appendChild(b);
+            });
+            renderBarang(Object.keys(dbStok)[0]);
+        }
+
+        function renderBarang(kat) {
+            const container = document.getElementById('display-barang');
+            container.innerHTML = "";
+            dbStok[kat].forEach(item => {
+                container.innerHTML += `<div class="item-barang" onclick="tambahItem('${kat}', '${item.n}', ${item.h})"><div class="badge-stok">STOK: ${item.s}</div><b>${item.n}</b><span>Rp ${item.h.toLocaleString('id-ID')}</span></div>`;
+            });
+        }
+
+        function tambahItem(kat, n, h) {
+            let brg = dbStok[kat].find(x => x.n === n);
+            let q = keranjang[n] ? keranjang[n].q : 0;
+            if(brg.s > q) {
+                if(keranjang[n]) keranjang[n].q++;
+                else keranjang[n] = { h, q: 1, kat };
+                updateUI();
+            } else { Swal.fire("Stok Habis!"); }
+        }
+
+        function kurangiItem(n) {
+            if(keranjang[n].q > 1) keranjang[n].q--;
+            else delete keranjang[n];
+            updateUI();
+        }
+
+        function updateUI() {
+            const list = document.getElementById('list-keranjang');
+            totalBelanja = 0; list.innerHTML = "";
+            for(let n in keranjang) {
+                let sub = keranjang[n].h * keranjang[n].q;
+                totalBelanja += sub;
+                list.innerHTML += `
+                <div class="cart-row">
+                    <div><b>${n}</b><br><small>x${keranjang[n].q} (Rp ${sub.toLocaleString()})</small></div>
+                    <button class="btn-min" onclick="kurangiItem('${n}')">-</button>
+                </div>`;
+            }
+            document.getElementById('display-total').innerText = "Total: Rp " + totalBelanja.toLocaleString();
+            if(totalBelanja === 0) {
+                document.getElementById('step-pilihan').style.display = 'none';
+                document.getElementById('area-bayar-non').style.display = 'none';
+                document.getElementById('btn-proses-awal').style.display = 'block';
+            }
+        }
+
+        function tampilkanOpsiBayar() {
+            if(totalBelanja === 0) return Swal.fire("Keranjang Kosong!");
+            document.getElementById('btn-proses-awal').style.display = 'none';
+            document.getElementById('step-pilihan').style.display = 'block';
+        }
+
+        function finalisasiBayar(st, diskon, inputId, manualUang = 0, memberNama = "Umum") {
+            const uang = manualUang || parseFloat(document.getElementById(inputId).value);
+            const tagihan = totalBelanja - diskon;
+            if(uang < tagihan) return Swal.fire("Uang tidak cukup!");
+
+            for(let n in keranjang) {
+                dbStok[keranjang[n].kat].find(x => x.n === n).s -= keranjang[n].q;
+            }
+            localStorage.setItem('db_gudang', JSON.stringify(dbStok));
+            
+            logTransaksiShift.push({ 
+                id: Date.now(),
+                waktu: new Date().toLocaleTimeString(), 
+                shift: shiftAktif, 
+                nominal: tagihan,
+                pembeli: memberNama 
+            });
+            localStorage.setItem('logKasir', JSON.stringify(logTransaksiShift));
+
+            document.getElementById('pos-main').style.display = 'none';
+            document.getElementById('area-struk').style.display = 'block';
+            document.getElementById('struk-final').innerHTML = `
+                <center><b>🌸 JAYA MINIMARKET 🌸</b><br>Shift: ${shiftAktif}<br>--------------------------</center>
+                ${Object.keys(keranjang).map(n => `${n.padEnd(15)} x${keranjang[n].q} Rp ${(keranjang[n].h*keranjang[n].q).toLocaleString()}`).join('<br>')}
+                <br>--------------------------<br><b>TOTAL: Rp ${tagihan.toLocaleString()}</b><br>Bayar: Rp ${uang.toLocaleString()}<br>Kembali: Rp ${(uang-tagihan).toLocaleString()}<br><center>TERIMAKASIH!</center>`;
+        }
+
+        async function prosesMember() {
+            const { value: nik } = await Swal.fire({ title: 'Input NIK Member', input: 'text' });
+            if(nik && dataMember[nik]) {
+                const tagihan = totalBelanja * 0.85;
+                const { value: uang } = await Swal.fire({ title: 'Member: ' + dataMember[nik].nama, text: 'Diskon 15% Tagihan: Rp ' + tagihan.toLocaleString(), input: 'number' });
+                if(uang >= tagihan) finalisasiBayar('Member', totalBelanja*0.15, null, uang, dataMember[nik].nama);
+            } else if(nik) { Swal.fire("Member Tidak Ditemukan"); }
+        }
+
+        // FUNGSI LAPORAN DENGAN HAPUS PER DATA
+        function bukaLaporan() {
+            document.getElementById('pos-main').style.display = 'none';
+            document.getElementById('modal-laporan').style.display = 'block';
+            let html = `<table><tr><th>JAM</th><th>SHIFT</th><th>PELANGGAN</th><th>NOMINAL</th><th>AKSI</th></tr>`;
+            logTransaksiShift.forEach((t, idx) => {
+                html += `<tr><td>${t.waktu}</td><td>${t.shift}</td><td>${t.pembeli}</td><td align="right">Rp ${t.nominal.toLocaleString()}</td><td align="center"><button class="btn-del-row" onclick="hapusRiwayat(${idx})">❌</button></td></tr>`;
+            });
+            html += `</table>`;
+            document.getElementById('isi-laporan').innerHTML = logTransaksiShift.length ? html : "<center>Belum ada data.</center>";
+        }
+
+        function hapusRiwayat(index) {
+            Swal.fire({
+                title: 'Hapus data ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    logTransaksiShift.splice(index, 1);
+                    localStorage.setItem('logKasir', JSON.stringify(logTransaksiShift));
+                    bukaLaporan();
+                }
+            });
+        }
+
+        function cariNikKtp() {
+            const nik = document.getElementById('inputCariNik').value;
+            if(dataMember[nik]) {
+                const d = dataMember[nik];
+                document.getElementById('hasil-cari-ktp').innerHTML = `
+<div class="ktp-card">
+|===========================|
+|            KTP            |
+|===========================|
+| NIK    : ${nik.padEnd(16)} |
+| NAMA   : ${d.nama.padEnd(16)} |
+| ALAMAT : ${d.alamat.padEnd(16)} |
+| LAHIR  : ${d.tgl.padEnd(16)} |
+|===========================|
+</div>`;
+            } else { Swal.fire("Tidak Ditemukan!"); }
+        }
+
+        function tutupLaporan() { document.getElementById('modal-laporan').style.display = 'none'; document.getElementById('pos-main').style.display = 'flex'; }
+        function bukaCekDataKtp() { document.getElementById('pos-main').style.display = 'none'; document.getElementById('modal-cek-ktp').style.display = 'block'; }
+        function tutupCekKtp() { document.getElementById('modal-cek-ktp').style.display = 'none'; document.getElementById('pos-main').style.display = 'flex'; }
+        function bukaBayarNonMember() { document.getElementById('step-pilihan').style.display = 'none'; document.getElementById('area-bayar-non').style.display = 'block'; }
+        async function daftarMemberBaru() {
+            const { value: f } = await Swal.fire({
+                title: 'Registrasi Member',
+                html: '<input id="n1" class="swal2-input" placeholder="NIK"><input id="n2" class="swal2-input" placeholder="Nama"><input id="n3" class="swal2-input" placeholder="Alamat"><input id="n4" class="swal2-input" placeholder="Tgl Lahir">',
+                preConfirm: () => [document.getElementById('n1').value, document.getElementById('n2').value, document.getElementById('n3').value, document.getElementById('n4').value]
+            });
+            if(f && f[0]) {
+                dataMember[f[0]] = { nama: f[1], alamat: f[2], tgl: f[3] };
+                localStorage.setItem('db_member', JSON.stringify(dataMember));
+                Swal.fire("Berhasil Terdaftar!");
+            }
+        }
+    </script>
+</body>
+</html>

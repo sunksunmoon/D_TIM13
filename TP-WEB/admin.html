@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Owner Central Dashboard - Minimarket Jaya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #fff0f3; padding: 20px; color: #333; }
+        .admin-box { background: white; padding: 40px; border-radius: 40px; border: 4px solid #ff4d94; max-width: 1200px; margin: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .boss-title { color: #ff4d94; text-align: center; font-size: 3rem; margin-bottom: 40px; border-bottom: 3px double #ff4d94; padding-bottom: 15px; font-weight: 700; }
+        
+        /* 4 TOMBOL GEDE */
+        .grid-menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-bottom: 40px; }
+        .card-menu { 
+            background: linear-gradient(135deg, #fff9fa 0%, #ffeef1 100%); 
+            border: 3px solid #ffb6c1; 
+            padding: 50px 20px; 
+            border-radius: 30px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: 0.4s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .card-menu h2 { font-size: 1.8rem; margin: 0; color: #ff4d94; }
+        .card-menu p { font-size: 1rem; color: #888; margin-top: 10px; }
+        .card-menu:hover { 
+            transform: scale(1.03); 
+            background: #ff4d94; 
+            color: white !important; 
+            border-color: #ff1a75;
+        }
+        .card-menu:hover h2, .card-menu:hover p { color: white; }
+        
+        .section { display: none; background: white; padding: 30px; border-radius: 30px; border: 1px solid #ffb6c1; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #ff4d94; color: white; padding: 15px; border: 1px solid #ddd; }
+        td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        
+        .btn { padding: 15px 30px; border-radius: 15px; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn-add { background: #4CAF50; color: white; margin-right: 10px; }
+        .btn-fire { background: #f44336; color: white; }
+        .btn-back { background: #444; color: white; width: 100%; margin-top: 30px; }
+        
+        .stat-card { background: linear-gradient(45deg, #ff4d94, #ff85a2); color: white; padding: 40px; border-radius: 30px; text-align: center; }
+        .log-box { background: #fdf2f4; padding: 20px; border-radius: 15px; border-left: 8px solid #ff4d94; font-family: 'Courier New', monospace; margin-top: 20px; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h1 class="boss-title">👑 OWNER DASHBOARD</h1>
+
+    <div class="grid-menu" id="main-menu">
+        <div class="card-menu" onclick="buka('laporan')">
+            <h2>📊 CEK LAPORAN TOKO</h2>
+            <p>Pantau detail transaksi per shift secara live</p>
+        </div>
+        <div class="card-menu" onclick="buka('pegawai')">
+            <h2>👥 DAFTAR PEGAWAI</h2>
+            <p>Manajemen staff, rekrutmen, dan pemecatan</p>
+        </div>
+        <div class="card-menu" onclick="buka('gudang')">
+            <h2>📦 CEK GUDANG</h2>
+            <p>Lihat stok barang (Hanya Tampilan Statis)</p>
+        </div>
+        <div class="card-menu" onclick="buka('penghasilan')">
+            <h2>💰 CEK PENGHASILAN</h2>
+            <p>Total omzet dan keuntungan hari ini</p>
+        </div>
+    </div>
+
+    <div id="sec-laporan" class="section">
+        <h2 style="color:#ff4d94">📊 Laporan Penjualan Real-Time</h2>
+        <div id="konten-laporan"></div>
+        <button class="btn btn-back" onclick="tutup()">Kembali ke Menu Utama</button>
+    </div>
+
+    <div id="sec-pegawai" class="section">
+        <h2 style="color:#ff4d94">👥 Struktur Organisasi Pegawai</h2>
+        <table>
+            <thead>
+                <tr><th>Nama</th><th>Jabatan</th><th>Usia</th><th>Gaji Bulanan</th></tr>
+            </thead>
+            <tbody id="tabel-pegawai"></tbody>
+        </table>
+        <div style="text-align:center; margin-top:30px;">
+            <button class="btn btn-add" onclick="tambahPegawai()">REKRUT PEGAWAI BARU</button>
+            <button class="btn btn-fire" onclick="pecatPegawai()">PECAT PEGAWAI</button>
+        </div>
+        <h4 style="margin-top:30px;">📜 Log Aktivitas HRD Kantor:</h4>
+        <div id="log-kantor" class="log-box"></div>
+        <button class="btn btn-back" onclick="tutup()">Kembali ke Menu Utama</button>
+    </div>
+
+    <div id="sec-gudang" class="section">
+        <h2 style="color:#ff4d94">📦 Data Stok Gudang (Mode Pantau)</h2>
+        <p style="color:red; font-size:0.8rem;">*Untuk menambah stok atau barang, silakan buka fitur <b>gudang</b></p>
+        <div id="konten-gudang-statis"></div>
+        <button class="btn btn-back" onclick="tutup()">Kembali ke Menu Utama</button>
+    </div>
+
+    <div id="sec-penghasilan" class="section">
+        <h2 style="color:#ff4d94">💰 Laporan Keuangan Global</h2>
+        <div class="stat-card">
+            <h3>TOTAL PENDAPATAN MASUK</h3>
+            <h1 id="total-uang" style="font-size: 4rem;">Rp 0</h1>
+        </div>
+        <button class="btn btn-back" onclick="tutup()">Kembali ke Menu Utama</button>
+    </div>
+</div>
+
+<script>
+    // DATA PEGAWAI TETAP
+    let daftarPegawai = JSON.parse(localStorage.getItem('db_staff')) || [
+        {n:"Andi Pratama", j:"Manager Operasional", u:40, g:8000000},
+        {n:"Budi Santoso", j:"Supervisor", u:35, g:6000000},
+        {n:"Citra Lestari", j:"Administrasi", u:28, g:4500000},
+        {n:"Dewi Anggraini", j:"HRD", u:32, g:6500000},
+        {n:"Eko Saputra", j:"Staff Gudang", u:30, g:4000000},
+        {n:"Fajar Nugroho", j:"Teknisi", u:27, g:4800000},
+        {n:"Gina Maharani", j:"Customer Service", u:25, g:4200000},
+        {n:"Hendra Wijaya", j:"Kepala Gudang", u:38, g:6800000},
+        {n:"Intan Permata", j:"Akuntan", u:29, g:5500000},
+        {n:"Joko Susilo", j:"Security", u:45, g:3800000},
+        {n:"Kiki Amelia", j:"Kasir", u:23, g:4000000},
+        {n:"Lukman Hakim", j:"IT Support", u:31, g:6000000},
+        {n:"Maya Putri", j:"Marketing", u:26, g:5000000},
+        {n:"Nanda Prakoso", j:"Sales Executive", u:34, g:5800000},
+        {n:"Oki Ramadhan", j:"Driver", u:36, g:4200000},
+        {n:"Putri Wulandari", j:"Sekretaris", u:27, g:5000000},
+        {n:"Rian Kurniawan", j:"Operator Produksi", u:24, g:4100000},
+        {n:"Siti Nurhaliza", j:"Quality Control", u:33, g:5700000},
+        {n:"Taufik Hidayat", j:"Maintenance", u:37, g:5300000},
+        {n:"Yuni Safitri", j:"Staff Keuangan", u:30, g:5600000}
+    ];
+
+    let logs = JSON.parse(localStorage.getItem('log_kantor')) || [];
+
+    function buka(id) {
+        document.getElementById('main-menu').style.display = 'none';
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById('sec-' + id).style.display = 'block';
+        
+        if(id === 'laporan') muatLaporanToko();
+        if(id === 'pegawai') muatPegawai();
+        if(id === 'gudang') muatGudangStatis();
+        if(id === 'penghasilan') muatCuan();
+    }
+
+    function tutup() {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById('main-menu').style.display = 'grid';
+    }
+
+    // FUNGSI GUDANG STATIS (HANYA VIEW)
+    function muatGudangStatis() {
+        const dbGudang = JSON.parse(localStorage.getItem('db_gudang'));
+        let h = "<table><tr><th>Kategori</th><th>Barang</th><th>Harga</th><th>Stok</th></tr>";
+        for(let kat in dbGudang) {
+            dbGudang[kat].forEach(it => {
+                h += `<tr><td>${kat}</td><td>${it.n}</td><td>Rp ${it.h.toLocaleString()}</td><td style="font-weight:bold; color:${it.s < 10 ? 'red' : 'green'}">${it.s}</td></tr>`;
+            });
+        }
+        h += "</table>";
+        document.getElementById('konten-gudang-statis').innerHTML = h;
+    }
+
+    // FUNGSI PEGAWAI
+    function muatPegawai() {
+        const t = document.getElementById('tabel-pegawai');
+        t.innerHTML = "";
+        daftarPegawai.forEach(p => {
+            t.innerHTML += `<tr><td>${p.n}</td><td>${p.j}</td><td>${p.u} thn</td><td>Rp ${p.g.toLocaleString()}</td></tr>`;
+        });
+        document.getElementById('log-kantor').innerHTML = logs.join("<br>") || "Belum ada riwayat aktivitas.";
+    }
+
+    async function tambahPegawai() {
+        const { value: f } = await Swal.fire({
+            title: 'Rekrutmen Baru',
+            html: '<input id="n" class="swal2-input" placeholder="Nama"><input id="j" class="swal2-input" placeholder="Jabatan"><input id="g" class="swal2-input" placeholder="Gaji"><p>Upload CV (PDF):</p><input type="file" id="cv">',
+            showCancelButton: true, confirmButtonText: 'TERIMA ✅', cancelButtonText: 'TOLAK ❌',
+            confirmButtonColor: '#4CAF50', cancelButtonColor: '#f44336'
+        });
+        const nama = document.getElementById('n').value;
+        const jabat = document.getElementById('j').value;
+        const gaji = document.getElementById('g').value;
+
+        if (nama && jabat) {
+            daftarPegawai.push({n: nama, j: jabat, u: 25, g: parseInt(gaji)});
+            logs.unshift(`[${new Date().toLocaleDateString()}] TERIMA: ${nama} (${jabat})`);
+            save();
+            Swal.fire('Berhasil!', nama + ' diterima.', 'success');
+        } else {
+            logs.unshift(`[${new Date().toLocaleDateString()}] TOLAK Calon Pegawai: ${nama || 'N/A'}`);
+            save();
+        }
+    }
+
+    async function pecatPegawai() {
+        const { value: n } = await Swal.fire({ title: 'Pecat Pegawai', input: 'text', inputPlaceholder: 'Nama Pegawai', showCancelButton: true });
+        const { value: r } = await Swal.fire({ title: 'Alasan', input: 'text', inputPlaceholder: 'Alasan dipecat' });
+        if (n) {
+            let i = daftarPegawai.findIndex(p => p.n.toLowerCase() === n.toLowerCase());
+            if (i > -1) {
+                daftarPegawai.splice(i, 1);
+                logs.unshift(`[${new Date().toLocaleDateString()}] PECAT: ${n} | Alasan: ${r}`);
+                save();
+                Swal.fire('Dipecat!', n + ' sudah dikeluarkan.', 'error');
+            } else { Swal.fire('Tidak Ketemu!'); }
+        }
+    }
+
+    function save() {
+        localStorage.setItem('db_staff', JSON.stringify(daftarPegawai));
+        localStorage.setItem('log_kantor', JSON.stringify(logs));
+        muatPegawai();
+    }
+
+    function muatLaporanToko() {
+        const logKasir = JSON.parse(localStorage.getItem('logKasir')) || [];
+        let h = "<table><tr><th>JAM</th><th>SHIFT</th><th>STATUS</th><th>NOMINAL</th></tr>";
+        logKasir.forEach(t => {
+            h += `<tr><td>${t.waktu}</td><td>${t.shift}</td><td>${t.status}</td><td align="right">Rp ${t.nominal.toLocaleString()}</td></tr>`;
+        });
+        h += "</table>";
+        document.getElementById('konten-laporan').innerHTML = logKasir.length ? h : "Belum ada transaksi.";
+    }
+
+    function muatCuan() {
+        const logKasir = JSON.parse(localStorage.getItem('logKasir')) || [];
+        let total = 0;
+        logKasir.forEach(t => total += t.nominal);
+        document.getElementById('total-uang').innerText = "Rp " + total.toLocaleString();
+    }
+</script>
+
+</body>
+</html>
