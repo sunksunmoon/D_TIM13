@@ -195,6 +195,26 @@ void inorder(NodeBarang* root) {
     inorder(root->right);
 }
 
+/* ====== VISUALISASI POHON (PENGGANTI INORDER) ====== */
+void visualisasiPohon(NodeBarang* root, int indent = 0) {
+    if (root == NULL) return;
+
+    // Jarak horizontal antar level pohon
+    int spasi = 10;
+    indent += spasi;
+
+    // 1. Rekursif ke kanan dulu (agar tampil di bagian atas terminal)
+    visualisasiPohon(root->right, indent);
+
+    // 2. Cetak node dengan spasi sesuai tingkatannya
+    cout << endl;
+    for (int i = spasi; i < indent; i++) cout << " ";
+    cout << "|--[" << root->kodeBarang << "]" << endl;
+
+    // 3. Rekursif ke kiri (tampil di bagian bawah terminal)
+    visualisasiPohon(root->left, indent);
+}
+
 #endif
 /*
 ====================================================
@@ -209,4 +229,3 @@ ke root. Jika ditemukan ketidakseimbangan, maka dilakukan
 rotasi AVL (LL, RR, LR, atau RL) agar pohon tetap seimbang.
 ====================================================
 */
-

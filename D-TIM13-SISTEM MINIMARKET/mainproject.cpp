@@ -205,7 +205,7 @@ void menuAdmin() {
                 do {
                     cout << "\n--- SUB-MENU DATA TERURUT (AVL) ---";
                     cout << "\n1. Tambah Kode Barang";
-                    cout << "\n2. Tampilkan Inorder";
+                    cout << "\n2. Tampilkan Struktur Visual Pohon";
                     cout << "\n0. Kembali";
                     cout << "\nPilih: "; cin >> pTree;
                     if (pTree == 1) {
@@ -217,9 +217,15 @@ void menuAdmin() {
                         cout << "Berhasil ditambahkan ke Tree.\n";
                     }
                     else if (pTree == 2) {
-                        if (rootUtama == NULL) cout << "Tree kosong!\n";
-                        else inorder(rootUtama);
-                    }
+			            if (rootUtama == NULL) {
+			                cout << "Tree masih kosong!\n";
+			            } else {
+			                cout << "\nVisualisasi Struktur AVL Tree (Akar di Paling Kiri):\n";
+			                cout << "--------------------------------------------------\n";
+			                visualisasiPohon(rootUtama, 0);
+			                cout << "--------------------------------------------------\n";
+			            }
+			        }
                 } while (pTree != 0);
                 break;
             }
