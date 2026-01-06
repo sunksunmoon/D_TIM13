@@ -145,8 +145,27 @@ bool loginGudang() {
     }
 }
 
-// ================= MENU PER ROLE =================
+string cariNamaBarang(string kode) {
+    // 1. Cari di data statis (dari barang_statis.h)
+    for(int i = 0; i < 50; i++) {
+        if(daftarBarang[i].id == kode) return daftarBarang[i].nama;
+    }
 
+    // 2. Cari di data dinamis (file teks)
+    ifstream file("barang_dinamis.txt");
+    string k, n, h, kat;
+    // Asumsi format file: KODE  NAMA  HARGA  KATEGORI
+    while (file >> k >> n >> h >> kat) {
+        if (k == kode) {
+            file.close();
+            return n;
+        }
+    }
+    file.close();
+    return "TIDAK_DITEMUKAN";
+}
+
+// ================= MENU PER ROLE =================
 // 1. MENU ADMIN 
 void menuAdmin() {
     int pilih;
@@ -206,17 +225,24 @@ void menuAdmin() {
                     cout << "\n--- SUB-MENU DATA TERURUT (AVL) ---";
                     cout << "\n1. Tambah Kode Barang";
                     cout << "\n2. Tampilkan Struktur Visual Pohon";
-                    cout << "\n3. Cari Barang";
                     cout << "\n0. Kembali";
                     cout << "\nPilih: "; cin >> pTree;
                     if (pTree == 1) {
-                        string kodeBaru, namaB;
-                        cout << "Masukkan kode: "; cin >> kodeBaru;
-                        cin.ignore();
-                        cout << "Masukkan nama: "; getline(cin, namaB);
-                        rootUtama = insertAVL(rootUtama, kodeBaru, namaB);
-                        cout << "Berhasil ditambahkan ke Tree.\n";
-                    }
+			            string kodeBaru;
+			            cout << "Masukkan kode barang: "; cin >> kodeBaru;
+			
+			            // PROSES OTOMATIS: Cari nama berdasarkan kode
+			            string namaOtomatis = cariNamaBarang(kodeBaru);
+			
+			            if (namaOtomatis != "TIDAK_DITEMUKAN") {
+			                cout << "[SISTEM] Nama ditemukan: " << namaOtomatis << endl;
+			                rootUtama = insertAVL(rootUtama, kodeBaru, namaOtomatis);
+			                cout << ">>> Berhasil ditambahkan ke AVL Tree.\n";
+			            } else {
+			                cout << "[ERROR] Kode barang '" << kodeBaru << "' tidak ada di Master Data!\n";
+			                cout << "Silahkan daftarkan dulu di Manajemen Master Barang.\n";
+			            }
+			        }
                     else if (pTree == 2) {
 			            if (rootUtama == NULL) {
 			                cout << "Tree masih kosong!\n";
@@ -227,20 +253,6 @@ void menuAdmin() {
 			                cout << "--------------------------------------------------\n";
 			            }
 			        }
-					else if (pTree == 3) {
-						string kodeCari;
-						cout << "Masukkan kode barang yang dicari: ";
-						cin >> kodeCari;
-						    
-						NodeBarang* hasil = cariBarang(rootUtama, kodeCari);
-						if (hasil != NULL) {
-						    cout << "\n[DATA DITEMUKAN]" << endl;
-						    cout << "Kode: " << hasil->kodeBarang << endl;
-						    cout << "Nama: " << hasil->namaBarang << endl;
-						} else {
-						    cout << "\n[!] Barang dengan kode " << kodeCari << " tidak ditemukan." << endl;
-						}
-					}
                 } while (pTree != 0);
                 break;
             }
@@ -395,8 +407,7 @@ void menuGudang() {
 
 int main() {
 	for(int i = 0; i < 50; i++) {
-		rootUtama = insertAVL(rootUtama, daftarBarang[i].id, daftarBarang[i].nama);
-        tambahStokBarang(daftarBarang[i].nama, 50); 
+        tambahStokBarang(daftarBarang[i].id, daftarBarang[i].nama, daftarBarang[i].kategori, 50); 
     }
     int pilih;
     do {

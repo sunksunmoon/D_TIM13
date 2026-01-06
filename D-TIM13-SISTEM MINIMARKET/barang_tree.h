@@ -14,7 +14,6 @@ using namespace std;
 struct NodeBarang {
     string kodeBarang;
     string namaBarang;
-    long hargaBarang;
     int height;
     NodeBarang* left;
     NodeBarang* right;
@@ -216,19 +215,7 @@ void visualisasiPohon(NodeBarang* root, int indent = 0) {
     visualisasiPohon(root->left, indent);
 }
 
-/* ====== SEARCH AVL ====== */
-NodeBarang* cariBarang(NodeBarang* root, string kode) {
-    // Jika pohon kosong atau kode ditemukan di root
-    if (root == NULL || root->kodeBarang == kode)
-        return root;
 
-    // Jika kode lebih besar dari kode root, cari di kanan
-    if (kode > root->kodeBarang)
-        return cariBarang(root->right, kode);
-
-    // Jika kode lebih kecil, cari di kiri
-    return cariBarang(root->left, kode);
-}
 #endif
 /*
 ====================================================

@@ -88,23 +88,23 @@ void tampilStok() {
     cout << "--------------------------------------------------\n";
 }
 
-// ================= TAMBAH STOK SECARA PROGRAM =================
-void tambahStokBarang(string namaBarang, long jumlah) {
+// ================= TAMBAH STOK SECARA PROGRAM (DENGAN DATA LENGKAP) =================
+void tambahStokBarang(string kode, string nama, string kategori, long jumlah) {
     BarangGudang* temp = headGudang;
     while (temp != NULL) {
-        if (temp->nama == namaBarang) {
+        if (temp->nama == nama) {
             temp->jumlah += jumlah;
             return;
         }
         temp = temp->next;
     }
-    // Tambahkan barang baru jika tidak ada
+
     BarangGudang* baru = new BarangGudang;
-    baru->kode = "UNKNOWN";
-    baru->nama = namaBarang;
-    baru->kategori = "UNKNOWN";
+    baru->kode = kode;          // Diambil dari parameter, bukan "UNKNOWN"
+    baru->nama = nama;
+    baru->kategori = kategori;  // Diambil dari parameter, bukan "UNKNOWN"
     baru->jumlah = jumlah;
-    baru->supplier = "UNKNOWN";
+    baru->supplier = "GUDANG_PUSAT"; 
     baru->next = NULL;
 
     if (headGudang == NULL) headGudang = baru;

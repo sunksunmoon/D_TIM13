@@ -71,12 +71,12 @@ void pushTransaksi() {
                 break;
             }
         }
-    }
         if(!ketemu){
             cout << "[WARNING] Kode barang tidak ditemukan!\n";
             delete baru;
             return;
-        } else {
+        }
+    } else {
         // Daftar kategori unik
         string kategori[5] = {"Elektronik","Makanan","Minuman","Furniture","Alat Mandi"};
         cout << "\nDaftar kategori:\n";
@@ -175,9 +175,11 @@ void pushTransaksi() {
     if(bayarPilihan == 1){
         cout << "Masukkan uang tunai: Rp "; cin >> uangBayar;
         if(uangBayar < totalAkhir){
-            cout << "[WARNING] Uang tidak cukup! Gunakan QRIS atau tambah uang tunai.\n";
-            // kembalikan stok karena transaksi gagal
-            tambahStokBarang(barang.nama, jumlahBeli);
+            cout << "[WARNING] Uang tidak cukup!\n";
+            
+            // PERBAIKAN DISINI: Harus kirim 4 parameter sesuai definisi baru
+            tambahStokBarang(barang.id, barang.nama, barang.kategori, jumlahBeli);
+            
             delete baru;
             return;
         }
@@ -235,19 +237,18 @@ void pushTransaksi() {
 
 // ================= POP TRANSAKSI =================
 void popTransaksi() {
-    if(!topTransaksi) {
-        cout << "[INFO] Stack kosong\n";
-        return;
-    }
+    if(!topTransaksi) return;
 
     Transaksi* hapus = topTransaksi;
     topTransaksi = topTransaksi->next;
+
+    tambahStokBarang(hapus->kode, hapus->namaBarang, "Retur", hapus->jumlah);
 
     totalDuitShiftIni -= hapus->total;
     jumlahPelangganShiftIni--;
 
     delete hapus;
-    cout << "[INFO] Transaksi terakhir dibatalkan\n";
+    cout << "[INFO] Transaksi terakhir dibatalkan & stok dikembalikan.\n";
 }
 
 // ================= LAPORAN SHIFT =================
