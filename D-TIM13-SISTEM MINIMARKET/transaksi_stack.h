@@ -71,12 +71,12 @@ void pushTransaksi() {
                 break;
             }
         }
+    }
         if(!ketemu){
             cout << "[WARNING] Kode barang tidak ditemukan!\n";
             delete baru;
             return;
-        }
-    } else {
+        } else {
         // Daftar kategori unik
         string kategori[5] = {"Elektronik","Makanan","Minuman","Furniture","Alat Mandi"};
         cout << "\nDaftar kategori:\n";
@@ -309,4 +309,3 @@ void tampilkanRiwayat() {
     cout << "------------------------------------------------------------------------------------------\n";
 }
 #endif
-

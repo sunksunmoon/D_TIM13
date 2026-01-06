@@ -206,6 +206,7 @@ void menuAdmin() {
                     cout << "\n--- SUB-MENU DATA TERURUT (AVL) ---";
                     cout << "\n1. Tambah Kode Barang";
                     cout << "\n2. Tampilkan Struktur Visual Pohon";
+                    cout << "\n3. Cari Barang";
                     cout << "\n0. Kembali";
                     cout << "\nPilih: "; cin >> pTree;
                     if (pTree == 1) {
@@ -226,6 +227,20 @@ void menuAdmin() {
 			                cout << "--------------------------------------------------\n";
 			            }
 			        }
+					else if (pTree == 3) {
+						string kodeCari;
+						cout << "Masukkan kode barang yang dicari: ";
+						cin >> kodeCari;
+						    
+						NodeBarang* hasil = cariBarang(rootUtama, kodeCari);
+						if (hasil != NULL) {
+						    cout << "\n[DATA DITEMUKAN]" << endl;
+						    cout << "Kode: " << hasil->kodeBarang << endl;
+						    cout << "Nama: " << hasil->namaBarang << endl;
+						} else {
+						    cout << "\n[!] Barang dengan kode " << kodeCari << " tidak ditemukan." << endl;
+						}
+					}
                 } while (pTree != 0);
                 break;
             }
@@ -380,6 +395,7 @@ void menuGudang() {
 
 int main() {
 	for(int i = 0; i < 50; i++) {
+		rootUtama = insertAVL(rootUtama, daftarBarang[i].id, daftarBarang[i].nama);
         tambahStokBarang(daftarBarang[i].nama, 50); 
     }
     int pilih;
