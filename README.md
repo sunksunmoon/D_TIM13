@@ -5,6 +5,8 @@ Sistem Minimarket berbasis **C++** yang dirancang untuk menangani transaksi kasi
 ---
 
 ### 👥 Anggota Tim (TIM 13 - Kelas D)
+| Nama | NIM |
+| :--- | :--- |
 | **Resty Amandha** | 2400018185 |
 | **Linda Amelia Sari** | 2400018187 |
 
