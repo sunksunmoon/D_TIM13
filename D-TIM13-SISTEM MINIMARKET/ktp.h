@@ -84,12 +84,12 @@ public:
         cout << "  Pilih (1/2): "; cin >> bh;
         berlaku_hingga = (bh == 1) ? "SEUMUR HIDUP" : "5 TAHUN";
 
-        // Simpan data ke Linked List memori dan ke file membership.txt
+        // Simpan ke database file teks secara permanen
         simpanDataKeFile();
         cout << "\n  [Sistem] Member '" << nama << "' Berhasil Terdaftar!" << endl;
     }
 
-    // Simpan ke file dengan format data (nik|nama|status)
+    // Fungsi simpan data ke file membership.txt (format: NIK|Nama|Status)
     void simpanDataKeFile() {
         ofstream file("membership.txt", ios::app);
         if (file.is_open()) {
@@ -100,8 +100,9 @@ public:
 };
 
 // --- VARIABEL & FUNGSI GLOBAL ---
-extern KTP* headMember;
+extern KTP* headMember; // Dideklarasikan di main.cpp
 
+// Fungsi memuat data dari file ke Linked List saat program dibuka
 inline void muatKTPDariFile() {
     ifstream file("membership.txt");
     if (!file) return;
@@ -113,10 +114,13 @@ inline void muatKTPDariFile() {
         stringstream ss(line);
         string vNik, vNama, vStatus;
         
+        // Parsing data menggunakan delimiter '|'
         if (getline(ss, vNik, '|') && getline(ss, vNama, '|') && getline(ss, vStatus, '|')) {
             KTP* baru = new KTP;
             baru->nik = vNik;
             baru->nama = vNama;
+            
+            // Masukkan ke Linked List (Memory)
             baru->next = headMember;
             headMember = baru;
         }
@@ -124,10 +128,11 @@ inline void muatKTPDariFile() {
     file.close();
 }
 
+// Fungsi inisialisasi data member awal jika database masih kosong
 inline void inisialisasiMemberDefault() {
     ifstream check("membership.txt");
     if (!check) {
-        // Data 4 orang member default
+        // Data 4 orang member default (mahasiswa/owner)
         string data[4][2] = {
             {"2400018185", "Resty Amandha"},
             {"2400018187", "Linda Amelia Sari"},
@@ -139,17 +144,20 @@ inline void inisialisasiMemberDefault() {
             KTP* m = new KTP;
             m->nik = data[i][0];
             m->nama = data[i][1];
-            m->simpanDataKeFile();
+            m->simpanDataKeFile(); // Tulis ke file
+            
+            // Tautkan ke Linked List memori
             m->next = headMember;
             headMember = m;
         }
-        cout << "[Sistem] Database Member (4 Orang) Berhasil Dibuat.\n";
+        cout << "[Sistem] Database Member Default Berhasil Dibuat.\n";
     } else {
         check.close();
-        muatKTPDariFile();
+        muatKTPDariFile(); // Jika file sudah ada, baca isinya ke memori
     }
 }
 
+// Fungsi pencarian NIK untuk divalidasi oleh sistem Kasir
 inline bool cekNIKTerdaftar(string nikCari) {
     KTP* temp = headMember;
     while (temp != NULL) {

@@ -20,11 +20,11 @@ Barang* headGudang = NULL;
 NodeKategori* rootKategori = NULL; 
 Nota* topNota = NULL;
 
-// --- FUNGSI KEAMANAN (Hardcoded - Tanpa security.txt) ---
+// --- FUNGSI KEAMANAN ---
 
 // Enkripsi Caesar Cipher (Geser 3 karakter)
 string enkripsi(string data) {
-    for(int i = 0; i < data.length(); i++) {
+    for(int i = 0; i < (int)data.length(); i++) {
         data[i] = data[i] + 3; 
     }
     return data;
@@ -34,11 +34,9 @@ string enkripsi(string data) {
 bool validasiLogin(string role, string inputPass) {
     string encryptedInput = enkripsi(inputPass); 
 
-    // Password Asli -> Terenkripsi (+3 karakter)
     // ADMIN: "1111" -> "4444"
     // KASIR: "2222" -> "5555"
     // GUDANG: "3333" -> "6666"
-
     if (role == "ADMIN") return (encryptedInput == "4444");
     if (role == "KASIR") return (encryptedInput == "5555");
     if (role == "GUDANG") return (encryptedInput == "6666");
@@ -76,44 +74,63 @@ bool prosesLoginKasir() {
     
     if (!validasiLogin("KASIR", pass)) return false;
 
-    cout << "\n+------------------------+" << endl;
-    cout << "|     Pilih Nama Kasir   |" << endl;
-    cout << "+------------------------+" << endl;
-    cout << "| 1. Elizabeth           |" << endl;
-    cout << "| 2. Victoria            |" << endl;
-    cout << "| 3. William             |" << endl;
-    cout << "| 4. Phillips            |" << endl;
-    cout << "+------------------------+" << endl;
-    cout << "  Pilih: "; n = inputAngka();
+    // --- VALIDASI PEMILIHAN NAMA KASIR (Loop sampai benar) ---
+    while (true) {
+        cout << "\n+------------------------+" << endl;
+        cout << "|     Pilih Nama Kasir   |" << endl;
+        cout << "+------------------------+" << endl;
+        cout << "| 1. Elizabeth           |" << endl;
+        cout << "| 2. Victoria            |" << endl;
+        cout << "| 3. William             |" << endl;
+        cout << "| 4. Phillips            |" << endl;
+        cout << "+------------------------+" << endl;
+        cout << "  Pilih (1-4): "; n = inputAngka();
 
-    if(n==1) kasirAktif="Elizabeth"; 
-    else if(n==2) kasirAktif="Victoria"; 
-    else if(n==3) kasirAktif="William"; 
-    else kasirAktif="Phillips";
+        if (n == 1) { kasirAktif = "Elizabeth"; break; }
+        else if (n == 2) { kasirAktif = "Victoria"; break; }
+        else if (n == 3) { kasirAktif = "William"; break; }
+        else if (n == 4) { kasirAktif = "Phillips"; break; }
+        else {
+            cout << "  [!] Input Salah! Silakan pilih angka 1 sampai 4.\n";
+        }
+    }
 
-    cout << "\n+------------------------+" << endl;
-    cout << "|     Pilih Jam Shift    |" << endl;
-    cout << "+------------------------+" << endl;
-    cout << "| 1. Pagi (07:00-15:00)  |" << endl;
-    cout << "| 2. Sore (15:00-23:00)  |" << endl;
-    cout << "| 3. Malam (23:00-07:00) |" << endl;
-    cout << "+------------------------+" << endl;
-    cout << "  Pilih: "; s = inputAngka();
+    // --- VALIDASI PEMILIHAN SHIFT (Loop sampai benar) ---
+    while (true) {
+        cout << "\n+------------------------+" << endl;
+        cout << "|     Pilih Jam Shift    |" << endl;
+        cout << "+------------------------+" << endl;
+        cout << "| 1. Pagi (07:00-15:00)  |" << endl;
+        cout << "| 2. Sore (15:00-23:00)  |" << endl;
+        cout << "| 3. Malam (23:00-07:00) |" << endl;
+        cout << "+------------------------+" << endl;
+        cout << "  Pilih (1-3): "; s = inputAngka();
 
-    if(s==1) shiftAktif="07:00-15:00"; 
-    else if(s==2) shiftAktif="15:00-23:00"; 
-    else shiftAktif="23:00-07:00";
+        if (s == 1) { shiftAktif = "07:00-15:00"; break; }
+        else if (s == 2) { shiftAktif = "15:00-23:00"; break; }
+        else if (s == 3) { shiftAktif = "23:00-07:00"; break; }
+        else {
+            cout << "  [!] Input Salah! Silakan pilih angka 1 sampai 3.\n";
+        }
+    }
     
     return true;
 }
 
 // --- MAIN PROGRAM ---
 int main() {
-    // Memuat data dari file database (jika ada)
+    // 1. Mencoba memuat data dari file database_stok.txt
     muatStokDariFile();             
     
-    // Inisialisasi data default ke memori agar sistem tidak kosong
-    inisialisasiDefault();          
+    // 2. LOGIKA PERBAIKAN: Hanya muat data default JIKA file kosong atau tidak ada
+    if (headGudang == NULL) {
+        cout << "  [Sistem] Memuat data stok awal..." << endl;
+        inisialisasiDefault();          
+        simpanStokKeFile(); // Langsung simpan agar file database tercipta
+    }
+
+    // 3. Muat data member dari file membership.txt (Jika ada)
+    // Dan gunakan default jika file belum ada
     inisialisasiMemberDefault();    
     
     int pilih;
@@ -143,8 +160,9 @@ int main() {
                 else cout << "  [X] Password Salah!\n"; 
                 break;
             case 0: 
+                // Simpan perubahan terakhir sebelum benar-benar keluar
                 simpanStokKeFile(); 
-                cout << "\n  [!] Menyimpan data... Keluar sistem. Terima Kasih!\n"; 
+                cout << "\n  [!] Data tersimpan. Keluar sistem. Terima Kasih!\n"; 
                 break;
             default:
                 cout << "  [!] Pilihan tidak tersedia.\n";

@@ -73,6 +73,45 @@ void simpanStokKeFile() {
     file.close();
 }
 
+void muatStokDariFile() {
+    ifstream file("database_stok.txt");
+    if (!file) return;
+
+    // PENTING: Bersihkan list lama agar tidak duplikat saat dimuat ulang
+    headGudang = NULL; 
+    rootKategori = NULL;
+
+    string line, k, n, kat, h_str, s_str;
+    while (getline(file, line)) {
+        if(line.empty()) continue;
+        stringstream ss(line);
+        getline(ss, k, '|');
+        getline(ss, n, '|');
+        getline(ss, h_str, '|');
+        getline(ss, kat, '|');
+        getline(ss, s_str, '|');
+
+        Barang* baru = new Barang;
+        baru->kode = k; baru->nama = n; baru->kategori = kat;
+        baru->harga = atol(h_str.c_str()); 
+        baru->stok = atoi(s_str.c_str());
+        baru->next = NULL;
+
+        // Gunakan Insert Back agar urutan tetap sesuai isi file
+        if (headGudang == NULL) {
+            headGudang = baru;
+        } else {
+            Barang* temp = headGudang;
+            while(temp->next != NULL) temp = temp->next;
+            temp->next = baru;
+        }
+        
+        // Daftarkan kategori ke AVL Tree
+        rootKategori = tambahKategori(rootKategori, kat);
+    }
+    file.close();
+}
+
 void urutkanStokTerendah() {
     if (headGudang == NULL || headGudang->next == NULL) {
         cout << "  [!] Data tidak cukup untuk diurutkan.\n";
@@ -151,7 +190,7 @@ void restockBarang() {
 
 void tampilkanTabelGudang() {
     cout << "\n+=======================================================================+" << endl;
-    cout << "|                       DAFTAR STOK GUDANG                              |" << endl;
+    cout << "|                        DAFTAR STOK GUDANG                             |" << endl;
     cout << "+-----+---------------+---------------------------+------------+--------+" << endl;
     cout << "| No  | Kode Barang   | Nama Produk               | Harga      | Stok   |" << endl;
     cout << "+-----+---------------+---------------------------+------------+--------+" << endl;
@@ -159,7 +198,7 @@ void tampilkanTabelGudang() {
     Barang* t = headGudang;
     int no = 1;
     if (t == NULL) {
-        cout << "|                 [!] Gudang Kosong / Belum ada data.                   |" << endl;
+        cout << "|                  [!] Gudang Kosong / Belum ada data.                  |" << endl;
     } else {
         while (t != NULL) {
             string status = (t->stok <= 5) ? "!" : " ";
@@ -188,30 +227,6 @@ void tambahBarangGudang() {
     rootKategori = tambahKategori(rootKategori, baru->kategori);
     simpanStokKeFile();
     cout << ">>> Barang berhasil ditambahkan!\n";
-}
-
-void muatStokDariFile() {
-    ifstream file("database_stok.txt");
-    if (!file) return;
-    string line, k, n, kat, h_str, s_str;
-    while (getline(file, line)) {
-        if(line.empty()) continue;
-        stringstream ss(line);
-        getline(ss, k, '|');
-        getline(ss, n, '|');
-        getline(ss, h_str, '|');
-        getline(ss, kat, '|');
-        getline(ss, s_str, '|');
-
-        Barang* baru = new Barang;
-        baru->kode = k; baru->nama = n; baru->kategori = kat;
-        baru->harga = atol(h_str.c_str()); 
-        baru->stok = atoi(s_str.c_str());
-        baru->next = headGudang;
-        headGudang = baru;
-        rootKategori = tambahKategori(rootKategori, kat);
-    }
-    file.close();
 }
 
 void menuGudang() {
@@ -265,10 +280,16 @@ void cariKategoriByNomor(NodeKategori* root, int target, int &current, string &h
     cariKategoriByNomor(root->right, target, current, hasil);
 }
 
+// Fungsi inisialisasi default yang digunakan di main.cpp
 void inisialisasiDefault() {
-    if (headGudang == NULL) {
-         muatStokDariFile();
-    }
+    // Fungsi ini bisa diisi dengan daftar barang manual 
+    // agar saat pertama kali dijalankan (file kosong), sistem punya data awal.
+    // Contoh:
+    Barang* b1 = new Barang;
+    b1->kode = "B001"; b1->nama = "Beras 5kg"; b1->kategori = "Sembako";
+    b1->harga = 65000; b1->stok = 20; b1->next = headGudang;
+    headGudang = b1;
+    rootKategori = tambahKategori(rootKategori, b1->kategori);
 }
 
 #endif

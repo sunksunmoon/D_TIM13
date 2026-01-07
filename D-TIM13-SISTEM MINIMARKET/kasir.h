@@ -5,7 +5,7 @@
 #include <sstream> 
 #include <cstdio> 
 #include <string>
-#include <ctime> // Library untuk waktu dan tanggal
+#include <ctime> 
 #include "struktur_data.h"
 #include "ktp.h"
 #include "gudang.h"
@@ -34,7 +34,7 @@ void tambahAntrian() {
     Pelanggan* baru = new Pelanggan;
     
     cout << "\n+==========================================+" << endl;
-    cout << "|               AMBIL ANTRIAN               |" << endl;
+    cout << "|                AMBIL ANTRIAN               |" << endl;
     cout << "+==========================================+" << endl;
     cout << "  Masukkan NIK (Kosongkan jika umum): ";
     cin.ignore();
@@ -56,6 +56,7 @@ void tambahAntrian() {
     if (frontQ == NULL) {
         frontQ = rearQ = baru;
     } else if (isMember) {
+        // Logika Priority Queue: Member disisipkan ke depan antrean umum
         if (frontQ->nama.find("[MEMBER]") == string::npos) {
             baru->next = frontQ;
             frontQ = baru;
@@ -96,32 +97,29 @@ void bayar() {
         cout << "\nDaftar Kategori Produk (AVL Tree):" << endl;
         counterKategori = 1;
         tampilKategoriBerseri(rootKategori);
-        cout << "Pilih Nomor Kategori: ";
+        cout << "Pilih Nomor Kategori (Hanya untuk referensi): ";
         int pilNomor = inputAngka();
         
         string katCari = "";
         int current = 1;
         cariKategoriByNomor(rootKategori, pilNomor, current, katCari);
 
-        if (katCari == "") {
-            cout << "  [!] Nomor kategori tidak valid!\n";
-            continue;
-        }
-
         cout << "Cari Nama/Kode Barang: ";
         string keyword;
         cin.ignore();
         getline(cin, keyword);
 
-        cout << "\nHasil Pencarian di Kategori [" << katCari << "]:" << endl;
+        cout << "\nHasil Pencarian Global (Mencari di seluruh Gudang):" << endl;
         cout << "------------------------------------------------------------" << endl;
         printf("| %-10s | %-25s | %-15s |\n", "KODE", "NAMA PRODUK", "HARGA");
         cout << "------------------------------------------------------------" << endl;
 
         Barang* b = headGudang;
         bool found = false;
+        
+        // PERBAIKAN: Pencarian Global (Menghapus filter b->kategori == katCari)
         while(b) {
-            if(b->kategori == katCari && (b->nama.find(keyword) != string::npos || b->kode == keyword)) {
+            if(b->nama.find(keyword) != string::npos || b->kode == keyword) {
                 printf("| %-10s | %-25s | Rp%-13ld |\n", b->kode.c_str(), b->nama.c_str(), b->harga);
                 found = true;
             }
@@ -150,7 +148,6 @@ void bayar() {
                         grandTotal += sub;
                         b->stok -= jml;
                         
-                        // Pengganti to_string menggunakan stringstream
                         stringstream ss;
                         ss << b->nama << " (x" << jml << ")\n  ";
                         listBelanja += ss.str();
@@ -168,7 +165,7 @@ void bayar() {
                 }
                 b = b->next;
             }
-            if(!suksesItem && found) cout << "  [!] Kode salah atau barang tidak sesuai!\n";
+            if(!suksesItem && found) cout << "  [!] Kode salah atau transaksi gagal!\n";
         }
 
         cout << "\nTambah barang lain untuk pelanggan ini? (y/n): ";
@@ -183,7 +180,7 @@ void bayar() {
         return;
     }
 
-    // --- LOGIKA PROMO & DISKON SEASONAL ---
+    // --- LOGIKA PROMO & DISKON ---
     long diskonMember = 0;
     long diskonVolume = 0;
     long diskonJumat = 0;
@@ -201,7 +198,11 @@ void bayar() {
     long ppn = totalSebelumPajak * 0.11; 
     long totalAkhir = totalSebelumPajak + ppn;
 
-    cout << "\nMetode Pembayaran (1. Tunai / 2. Cashless): "; 
+    // Tampilan Metode Pembayaran Menurun
+    cout << "\nMetode Pembayaran:" << endl;
+    cout << "1. Tunai" << endl;
+    cout << "2. Cashless" << endl;
+    cout << "Pilih metode (1/2): ";
     int pilMetode = inputAngka();
     long bayarTunai = 0;
     string metodeStr = (pilMetode == 2) ? "CASHLESS" : "TUNAI";
@@ -227,11 +228,15 @@ void bayar() {
     topNota = notaBaru;
 
     simpanLaporanKeFile(logBelanjaSimple, totalAkhir);
+    
+    // Simpan perubahan stok ke file database gudang secara permanen
+    simpanStokKeFile(); 
+
     totalPemasukanShift += totalAkhir;
     pelangganDilayani++;
 
     cout << "\n\n==========================================" << endl;
-    cout << "              MINIMARKET ABADI             " << endl;
+    cout << "              MINIMARKET ABADI              " << endl;
     cout << "==========================================" << endl;
     printf(" No. Struk : TR-%d\n", nomorStruk++);
     printf(" Pelanggan : %s\n", frontQ->nama.c_str());
@@ -249,12 +254,13 @@ void bayar() {
     printf("  KEMBALIAN          : Rp %10ld\n", kembalian);
     cout << "==========================================" << endl;
 
+    // Hapus dari antrean setelah dilayani
     Pelanggan* temp = frontQ;
     frontQ = frontQ->next;
     if (frontQ == NULL) rearQ = NULL;
     delete temp;
     
-    cout << "\n  [OK] Transaksi Selesai. Tekan Enter...";
+    cout << "\n  [OK] Transaksi Selesai & Stok Diperbarui. Tekan Enter...";
     cin.ignore(); cin.get();
 }
 

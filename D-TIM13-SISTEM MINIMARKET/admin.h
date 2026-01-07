@@ -50,7 +50,6 @@ void lihatLaporanPenjualanLengkap() {
         getline(ss, t, '|'); // Bagian Total
         getline(ss, d, '|'); // Bagian Info
         
-        // Parsing angka total (Menghapus prefix "TOTAL:")
         long valTotal = 0;
         if (t.find("TOTAL:") != string::npos) {
             valTotal = atol(t.substr(6).c_str());
@@ -76,13 +75,18 @@ void registrasiMember() {
     KTP* baru = new KTP;
     baru->inputKTP(); 
     
+    // Simpan ke Linked List (Memory)
     if (headMember == NULL) {
         headMember = baru;
     } else {
         baru->next = headMember;
         headMember = baru;
     }
-    cout << "\n  [OK] Data member berhasil ditambahkan ke Linked List.\n";
+
+    // PENTING: Simpan ke file membership.txt (Permanen)
+    baru->simpanDataKeFile(); 
+    
+    cout << "\n  [OK] Member berhasil terdaftar secara permanen.\n";
 }
 
 void lihatDaftarMember() {
@@ -131,7 +135,7 @@ void pantauStokKritis() {
     }
 
     if (!adaKritis) {
-        cout << "|             [OK] Tidak ada stok kritis saat ini.       |" << endl;
+        cout << "|             [OK] Tidak ada stok kritis.                |" << endl;
     }
     cout << "+-----+---------------+---------------------------+--------+" << endl;
 }
@@ -142,7 +146,7 @@ void menuAdmin() {
     int pil;
     do {
         cout << "\n+==========================================+" << endl;
-        cout << "|             MENU UTAMA ADMIN             |" << endl;
+        cout << "|              MENU UTAMA ADMIN            |" << endl;
         cout << "+==========================================+" << endl;
         cout << "| 1. Registrasi Member Baru                |" << endl;
         cout << "| 2. Lihat Daftar Member Terdaftar         |" << endl;
@@ -159,7 +163,7 @@ void menuAdmin() {
             case 1: registrasiMember(); break;
             case 2: lihatDaftarMember(); break;
             case 3:
-                cout << "\n--- RIWAYAT NOTA (STACK) ---" << endl;
+                cout << "\n--- RIWAYAT NOTA (STACK SESI INI) ---" << endl;
                 {
                     Nota* t = topNota;
                     if (!t) cout << "  [!] Belum ada transaksi di sesi ini.\n";
