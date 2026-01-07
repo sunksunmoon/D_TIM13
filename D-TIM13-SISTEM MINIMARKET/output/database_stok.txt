@@ -1,0 +1,50 @@
+BAR03D|Lemari Kayu|400000|Furniture|3
+BAR08D|Kasur Lipat|500000|Furniture|4
+BAR06A|Televisi|1500000|Elektronik|4
+BAR02D|Meja Belajar|150000|Furniture|5
+BAR05A|Dispenser|300000|Elektronik|5
+BAR06D|Cermin Besar|60000|Furniture|6
+BAR07A|Speaker|500000|Elektronik|6
+BAR04D|Jemuran Besi|100000|Furniture|7
+BAR05D|Rak Sepatu|75000|Furniture|8
+BAR04A|Blender|180000|Elektronik|8
+BAR08E|Sikat Lantai|15000|Alat Mandi|10
+BAR09D|Karpet Lantai|120000|Furniture|10
+BAR01D|Kursi Plastik|50000|Furniture|10
+BAR01A|Setrika|150000|Elektronik|10
+BAR07E|Ember Plastik|25000|Alat Mandi|12
+BAR09C|Sirup ABC|20000|Minuman|12
+BAR03A|Rice Cooker|250000|Elektronik|12
+BAR06E|Gayung Mandi|12000|Alat Mandi|13
+BAR08C|Yogurt Cimory|15000|Minuman|15
+BAR05C|Jus Jeruk|12000|Minuman|15
+BAR08B|Biskuit Kaleng|10000|Makanan|15
+BAR02A|Kipas Angin|200000|Elektronik|15
+BAR05E|Handuk Mandi|5000|Alat Mandi|20
+BAR07D|Bantal Tidur|35000|Furniture|20
+BAR07C|Mizone|7000|Minuman|20
+BAR10B|Kornet Sapi|25000|Makanan|20
+BAR04B|Beras Ramos|75000|Makanan|20
+BAR06C|Coca Cola|8000|Minuman|24
+BAR02C|Teh Botol Sosro|5000|Minuman|24
+BAR07B|Tepung Terigu|12000|Makanan|25
+BAR08A|Charger HP|50000|Elektronik|25
+BAR04E|Sikat Gigi|8000|Alat Mandi|30
+BAR10C|Teh Kotak|6000|Minuman|30
+BAR04C|Susu UHT 250ml|10000|Minuman|30
+BAR09B|Sarden Kaleng|15000|Makanan|30
+BAR10A|Stop Kontak|25000|Elektronik|30
+BAR09E|Detergen Bubuk|20000|Alat Mandi|35
+BAR06B|Minyak Goreng|18000|Makanan|35
+BAR10E|Pewangi Pakaian|10000|Alat Mandi|40
+BAR02E|Shampoo Cair|15000|Alat Mandi|40
+BAR05B|Gula Pasir|15000|Makanan|40
+BAR09A|Lampu LED|35000|Elektronik|40
+BAR01C|Aqua Botol|4000|Minuman|48
+BAR03E|Pasta Gigi|10000|Alat Mandi|50
+BAR10D|Gantungan Baju|15000|Furniture|50
+BAR03C|Kopi Kapal Api|5000|Minuman|50
+BAR01E|Sabun Batang|5000|Alat Mandi|98
+BAR03B|Mie Sedaap|3000|Makanan|100
+BAR02B|Indomie Goreng|3000|Makanan|100
+BAR01B|Indomie Rebus|3000|Makanan|100
